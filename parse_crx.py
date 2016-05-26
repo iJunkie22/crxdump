@@ -13,7 +13,7 @@ def main():
         sys.exit(1)
 
     crx_fn = os.path.abspath(sys.argv[1])
-    crx_dir = crx_fn + '_dump/'
+    crx_dir = crx_fn + '_dump'
 
     if not os.path.isdir(crx_dir):
         os.mkdir(crx_dir)
@@ -29,7 +29,9 @@ def main():
 
         print('PKZip starts at', f.tell())
         zf = zipfile.ZipFile(f)
-        print(zf.namelist())
+        print()
+        print(os.path.basename(crx_dir))
+        print('\t' + '\n\t'.join(zf.namelist()))
 
         for fn in zf.namelist():
             p1, sep, p2 = str(fn).rpartition('/')

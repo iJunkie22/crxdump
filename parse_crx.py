@@ -1,12 +1,14 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import os
 import struct
 import sys
 import zipfile
 
+
 def main():
     if len(sys.argv) != 2:
-        print 'Usage', sys.argv[0], '<filename.crx>'
+        print('Usage', sys.argv[0], '<filename.crx>')
         sys.exit(1)
     f = open(sys.argv[1], 'rb')
     assert (f.read(4) == 'Cr24')
@@ -15,9 +17,9 @@ def main():
     sig_size = struct.unpack('I', f.read(4))[0]
     key = f.read(key_size)
     sig = f.read(sig_size)
-    print 'PKZip starts at', f.tell()
+    print('PKZip starts at', f.tell())
     zf = zipfile.ZipFile(f)
-    print zf.namelist()
+    print(zf.namelist())
     os.mkdir(os.path.basename(sys.argv[1]))
     os.chdir(os.path.basename(sys.argv[1]))
     for filename in zf.namelist():

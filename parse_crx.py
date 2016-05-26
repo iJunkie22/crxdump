@@ -4,13 +4,21 @@ import os
 import struct
 import sys
 import zipfile
+import os.path
 
 
 def main():
     if len(sys.argv) != 2:
         print('Usage', sys.argv[0], '<filename.crx>')
         sys.exit(1)
-    f = open(sys.argv[1], 'rb')
+
+    crx_fn = os.path.abspath(sys.argv[1])
+    crx_dir = crx_fn + '_dump/'
+
+    if not os.path.isdir(crx_dir):
+        os.mkdir(crx_dir)
+
+    f = open(crx_fn, 'rb')
     try:
         assert (f.read(4) == 'Cr24')
         version = struct.unpack('I', f.read(4))[0]
@@ -18,18 +26,22 @@ def main():
         sig_size = struct.unpack('I', f.read(4))[0]
         key = f.read(key_size)
         sig = f.read(sig_size)
+
         print('PKZip starts at', f.tell())
         zf = zipfile.ZipFile(f)
         print(zf.namelist())
-        os.mkdir(os.path.basename(sys.argv[1]))
-        os.chdir(os.path.basename(sys.argv[1]))
-        for filename in zf.namelist():
-            if filename.endswith('/'):
-                os.mkdir(filename)
+
+        for fn in zf.namelist():
+            p1, sep, p2 = str(fn).rpartition('/')
+            if p1 != '' and not os.path.isdir(os.path.join(crx_dir, p1)):
+                os.mkdir(os.path.join(crx_dir, p1))
+
+            if p2 == '':
                 continue
-            outfile = open(filename, 'wb')
+
+            outfile = open(os.path.join(crx_dir, p1, p2), 'wb')
             try:
-                outfile.write(zf.read(filename))
+                outfile.write(zf.read(fn))
             finally:
                 outfile.close()
 

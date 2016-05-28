@@ -7,12 +7,12 @@ import zipfile
 import os.path
 
 
-def main():
-    if len(sys.argv) != 2:  # Print usage and abort
-        print('Usage', sys.argv[0], '<filename.crx>')
+def main(*args):
+    if len(args) != 2:  # Print usage and abort
+        print('Usage', args[0], '<filename.crx>')
         sys.exit(1)
 
-    crx_fn = os.path.abspath(sys.argv[1])
+    crx_fn = os.path.abspath(args[1])
     crx_dir = crx_fn + '_dump'
 
     if not os.path.isdir(crx_dir):
@@ -52,4 +52,4 @@ def main():
         f.close()
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)

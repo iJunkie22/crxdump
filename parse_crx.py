@@ -7,7 +7,7 @@ import zipfile
 import os.path
 
 
-def main(*args):
+def main(args):
     if len(args) != 2:  # Print usage and abort
         print('Usage', args[0], '<filename.crx>')
         sys.exit(1)
@@ -18,8 +18,9 @@ def main(*args):
     if not os.path.isdir(crx_dir):
         os.mkdir(crx_dir)
 
-    f = open(crx_fn, 'rb')
-    try:
+    assert os.path.exists(crx_dir)
+
+    with open(crx_fn, 'rb') as f:
         assert (f.read(4) == 'Cr24')
         version = struct.unpack('I', f.read(4))[0]
         key_size = struct.unpack('I', f.read(4))[0]
@@ -42,14 +43,8 @@ def main(*args):
             if p2 == '':    # This was only a directory name
                 continue
 
-            outfile = open(os.path.join(crx_dir, p1, p2), 'wb')
-            try:
+            with open(os.path.join(crx_dir, p1, p2), 'wb') as outfile:
                 outfile.write(zf.read(fn))
-            finally:
-                outfile.close()
-
-    finally:
-        f.close()
 
 if __name__ == "__main__":
     main(sys.argv)
